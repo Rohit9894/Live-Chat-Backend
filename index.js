@@ -1,4 +1,6 @@
+require("dotenv").config();
 const express = require("express");
+
 const connect = require("./config/db");
 const color = require("colors");
 const cors = require("cors");
@@ -6,7 +8,7 @@ const app = express();
 const userRoute = require("./features/Routes/userRoutes");
 const chatRoute = require("./features/Routes/chatRoutes");
 const messageRoute = require("./features/Routes/messageRoutes");
-
+const userModel = require("./features/models/userModel");
 app.use(
   cors({
     origin: "*",
@@ -36,16 +38,18 @@ const io = require("socket.io")(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("Connected to socket.io");
-  socket.on("setup", (userData) => {
+  socket.on("setup", async (userData) => {
     socket.join(userData.userId);
 
-    console.log("plus" + " " + userData.userId);
+    const userr = await userModel.findByIdAndUpdate(userData.userId, {
+      status: true,
+    });
+    // console.log(userr);
   });
 
   socket.on("join chat", (room) => {
     socket.join(room);
-    console.log("User Joined Room: " + room);
+    // console.log("User Joined Room: " + room);
   });
   socket.on("typing", (room) => {
     socket.in(room).emit("typing");
@@ -64,8 +68,17 @@ io.on("connection", (socket) => {
     });
   });
 
-  // socket.off("setup", () => {
-  //   console.log("USER DISCONNECTED");
-  //   socket.leave(userData._id);
-  // });
+  socket.off("setup", () => {
+    console.log("USER DISCONNECTED");
+    socket.leave(userData._id);
+  });
+  socket.on("disconnect", () => {
+    socket.broadcast.emit("disc", "world");
+  });
+  socket.on("mama", async (data) => {
+    const userr = await userModel.findByIdAndUpdate(data.userId, {
+      status: false,
+    });
+    // console.log(userr);
+  });
 });
