@@ -1,6 +1,6 @@
 require("dotenv").config();
-URL =
-  "mongodb+srv://r:g@cluster0.hsmeq1z.mongodb.net/chatApp?retryWrites=true&w=majority";
+// URL =
+//   "mongodb+srv://r:g@cluster0.hsmeq1z.mongodb.net/chatApp?retryWrites=true&w=majority";
 const express = require("express");
 const connect = require("./config/db");
 const color = require("colors");
@@ -31,7 +31,7 @@ const server = app.listen(5000, async () => {
 });
 
 const io = require("socket.io")(server, {
-  pingTimeout: 60000,
+  pingTimeout: 6000,
   cors: {
     origin: "*",
     // credentials: true,
@@ -45,12 +45,10 @@ io.on("connection", (socket) => {
     const userr = await userModel.findByIdAndUpdate(userData.userId, {
       status: true,
     });
-    // console.log(userr);
   });
 
   socket.on("join chat", (room) => {
     socket.join(room);
-    // console.log("User Joined Room: " + room);
   });
   socket.on("typing", (room) => {
     socket.in(room).emit("typing");
@@ -64,15 +62,14 @@ io.on("connection", (socket) => {
 
     chat.users.forEach((user) => {
       if (user._id == newMessageRecieved.sender._id) return;
-
       socket.in(user._id).emit("message recieved", newMessageRecieved);
     });
   });
 
-  socket.off("setup", () => {
-    console.log("USER DISCONNECTED");
-    socket.leave(userData._id);
-  });
+  // socket.off("setup", () => {
+  //   console.log("USER DISCONNECTED");
+  //   socket.leave(userData._id);
+  // });
   socket.on("disconnect", () => {
     socket.broadcast.emit("disc", "world");
   });
@@ -80,6 +77,5 @@ io.on("connection", (socket) => {
     const userr = await userModel.findByIdAndUpdate(data.userId, {
       status: false,
     });
-    // console.log(userr);
   });
 });
