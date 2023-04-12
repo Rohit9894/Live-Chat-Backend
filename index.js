@@ -1,6 +1,4 @@
 require("dotenv").config();
-// URL =
-//   "mongodb+srv://r:g@cluster0.hsmeq1z.mongodb.net/chatApp?retryWrites=true&w=majority";
 const express = require("express");
 const connect = require("./config/db");
 const color = require("colors");
