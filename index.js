@@ -19,7 +19,7 @@ app.use("/chat", chatRoute);
 app.use("/message", messageRoute);
 
 app.get("/", (req, res) => {
-  res.send("Hello what are you doin");
+  res.send("Hello what are you doing");
 });
 // app.use(notFound);
 // app.use(errHandler);
@@ -31,7 +31,7 @@ const server = app.listen(5000, async () => {
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://client-theta-ebon.vercel.app",
     credentials: true,
   },
 });
